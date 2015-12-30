@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import
+
 import string
 import random
 import functools
 from flask import Flask
-from flask.ext.cache import Cache
+
+from cache import cache
 
 SECRET_KEY = '\xfb\x12\xdf\xa1@i\xd6>V\xc0\xbb\x8fp\x16#Z\x0b\x81\xeb\x16'
 DEBUG = True
@@ -15,7 +18,7 @@ CACHE_MEMCACHED_SERVERS = ['127.0.0.1:11211']
 
 app = Flask(__name__)
 app.config.from_object(__name__)
-cache = Cache(app)
+cache.init_app(app)
 
 strings = string.ascii_lowercase
 
@@ -45,7 +48,7 @@ def hello(a):
     return strings[a] + random.choice(strings)
 
 
-def get_dict_by_ids(func, ids):
+def get_dict(func, ids):
     """
     id为key, value为func返回值的dict
     :param func: 有cache.memoize装饰的方法, 只支持一个参数
@@ -96,7 +99,7 @@ def func_page():
     cache.delete_memoized(hello)
     print hello(1)
     print hello(3)
-    print get_dict_by_ids(hello, [1, 2, 3])
+    print get_dict(hello, [1, 2, 3])
     return 'OK'
 
 
@@ -105,7 +108,7 @@ def cls_page():
     cache.delete_memoized(User.get)
     print User.get(1)
     print User.get(3)
-    print get_dict_by_ids(User.get, [1, 2, 3])
+    print get_dict(User.get, [1, 2, 3])
     return 'OK'
 
 
@@ -115,7 +118,7 @@ def self_page():
     cache.delete_memoized(user.get)
     print user.get_2(1)
     print user.get_2(3)
-    print get_dict_by_ids(user.get_2, [1, 2, 3])
+    print get_dict(user.get_2, [1, 2, 3])
     return 'OK'
 
 if __name__ == '__main__':
