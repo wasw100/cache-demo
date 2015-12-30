@@ -27,7 +27,6 @@ class User():
     def __init__(self, name):
         self.name = name
 
-    
     @classmethod
     @cache.memoize()
     def get(cls, a):
@@ -48,9 +47,10 @@ def hello(a):
 
 def get_dict_by_ids(func, ids):
     """
-    :param func: 有cache.memoize装饰的方法
+    id为key, value为func返回值的dict
+    :param func: 有cache.memoize装饰的方法, 只支持一个参数
     :params ids: id列表
-    :return: id为key, func返回值位value的dict
+    :return: dict
     """
     if not ids:
         return dict()
@@ -99,6 +99,7 @@ def func_page():
     print get_dict_by_ids(hello, [1, 2, 3])
     return 'OK'
 
+
 @app.route('/cls')
 def cls_page():
     cache.delete_memoized(User.get)
@@ -106,6 +107,7 @@ def cls_page():
     print User.get(3)
     print get_dict_by_ids(User.get, [1, 2, 3])
     return 'OK'
+
 
 @app.route('/self')
 def self_page():
